@@ -1,7 +1,7 @@
 # HAR Helper
 
-> A local Node.js tool for loading, filtering, inspecting, and exporting HAR (HTTP Archive) files — designed to help developers clean up network traffic data before **🤖 sharing it with AI assistants** or for debugging.
-
+> Loading, filtering, inspecting, and exporting HAR (HTTP Archive) files — designed to help developers clean up network traffic data before **🤖 sharing it with AI assistants** or for debugging. 
+> Think of this like 'fiddler' for AI, cleanup requests/responses feed it to AI.
 ![HAR Helper screenshot](screenshots/demo.png)
 
 ---
@@ -40,11 +40,9 @@ npm run dev
 
 Open **http://localhost:5173** in your browser.
 
-### Production Build
+### Allow chrome UN sanitaized HAR 
+![Chrome HAR gif](screenshots/DISABLE_SANITAZE_HAR_.gif)
 
-```bash
-npm run build
-npm start
 ```
 
 The built app is served at **http://localhost:3000**.
@@ -117,6 +115,10 @@ Ideas, bug reports, and pull requests are welcome!
 If you have a feature idea or found something that could be improved — open an issue or submit a PR. The project is intentionally simple and focused, so contributions that keep it lean and useful are most appreciated.
 
 ---
+
+## FUTURE POSSIBLE IDEAS
+- request history tree (how come we get here with this token etc.)
+- api/mcp so AI can analize reuqest and ask details for some specific requests (not handling all requests inside context window)
 
 ## License
 
