@@ -1,6 +1,6 @@
 # HAR Helper
 
-> A local Node.js tool for loading, filtering, inspecting, and exporting HAR (HTTP Archive) files — designed to help developers clean up network traffic data before sharing it with AI assistants or for debugging.
+> A local Node.js tool for loading, filtering, inspecting, and exporting HAR (HTTP Archive) files — designed to help developers clean up network traffic data before **🤖 sharing it with AI assistants** or for debugging.
 
 ![HAR Helper screenshot](screenshots/demo.png)
 
