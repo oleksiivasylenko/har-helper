@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HAR Helper - Request Filter</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>HAR Helper</h1>
+      <div id="har-info"></div>
+      <button id="global-settings-btn">⚙ Settings</button>
+      <button id="clear-storage-btn">Clear Storage</button>
+    </header>
+
+    <section id="expression-section">
+      <h2 id="expression-toggle"><span id="expression-arrow">▼</span> Expression Editor</h2>
+      <div id="expression-container"></div>
+    </section>
+
+    <section id="quick-filters">
+      <h3>Exclude by Type</h3>
+      <div id="preset-filter-buttons"></div>
+      <div id="quick-filter-buttons"></div>
+      <h3 style="margin-top:8px">Filter by Tag</h3>
+      <div id="tag-filter-buttons"></div>
+    </section>
+
+    <section id="actions-bar">
+      <div id="selection-info">
+        <span id="visible-count">0</span> visible / <span id="total-count">0</span> total |
+        <span id="checked-count">0</span> checked
+      </div>
+      <div id="action-buttons">
+        <button id="select-all-btn">Select All Visible</button>
+        <button id="deselect-all-btn">Deselect All</button>
+        <button id="export-settings-btn">Export Settings</button>
+        <button id="create-har-btn">Create Filtered HAR</button>
+      </div>
+    </section>
+
+    <section id="request-list-section">
+      <table id="request-table">
+        <thead>
+          <tr>
+            <th class="col-check"><input type="checkbox" id="master-checkbox" checked></th>
+            <th class="col-index sortable" data-sort="index">#</th>
+            <th class="col-method sortable" data-sort="method">Method</th>
+            <th class="col-status sortable" data-sort="status">Status</th>
+            <th class="col-type sortable" data-sort="type">Type</th>
+            <th class="col-mime sortable" data-sort="mime">MIME</th>
+            <th class="col-size sortable" data-sort="size">Size</th>
+            <th class="col-time sortable" data-sort="time">Time</th>
+            <th class="col-tags">Tags</th>
+            <th class="col-actions"></th>
+            <th class="col-url sortable" data-sort="url">URL</th>
+          </tr>
+        </thead>
+        <tbody id="request-tbody"></tbody>
+      </table>
+    </section>
+
+    <div id="status-bar"></div>
+    <div id="copy-toast">URL copied to clipboard!</div>
+  </div>
+
+  <div id="export-modal-overlay" class="hidden">
+    <div id="export-settings-panel">
+      <div class="modal-header">
+        <h4>Export Settings</h4>
+        <button id="export-modal-close" class="modal-close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="exp-filter-row">
+          <input type="text" id="exp-header-filter" placeholder="Filter headers by name...">
+        </div>
+        <div class="exp-section">
+          <div class="exp-section-header" data-target="exp-req-headers-list">
+            <span class="exp-arrow">▶</span> Request Headers <span id="exp-req-headers-count" class="exp-header-count"></span>
+            <span class="exp-header-actions">
+              <label class="exp-noise-toggle"><input type="checkbox" id="exp-hide-noise-req" checked> Hide noise</label>
+              <button class="exp-sel-all" data-group="req-headers">All</button>
+              <button class="exp-sel-none" data-group="req-headers">None</button>
+            </span>
+          </div>
+          <div id="exp-req-headers-list" class="exp-header-list collapsed"></div>
+        </div>
+        <div class="exp-section">
+          <div class="exp-section-header" data-target="exp-resp-headers-list">
+            <span class="exp-arrow">▶</span> Response Headers <span id="exp-resp-headers-count" class="exp-header-count"></span>
+            <span class="exp-header-actions">
+              <label class="exp-noise-toggle"><input type="checkbox" id="exp-hide-noise-resp" checked> Hide noise</label>
+              <button class="exp-sel-all" data-group="resp-headers">All</button>
+              <button class="exp-sel-none" data-group="resp-headers">None</button>
+            </span>
+          </div>
+          <div id="exp-resp-headers-list" class="exp-header-list collapsed"></div>
+        </div>
+        <div class="exp-manage-noise-bar">
+          <button id="manage-noise-btn">Manage Noise Headers</button>
+        </div>
+        <hr class="exp-divider">
+        <label><input type="checkbox" id="exp-original-order" checked> Use original order</label>
+        <label><input type="checkbox" id="exp-req-body" checked> Request Body</label>
+        <label><input type="checkbox" id="exp-req-cookies" checked> Request Cookies</label>
+        <label><input type="checkbox" id="exp-resp-body" checked> Response Body</label>
+        <label><input type="checkbox" id="exp-resp-cookies" checked> Response Cookies</label>
+        <label><input type="checkbox" id="exp-timings" checked> Timings</label>
+        <label><input type="checkbox" id="exp-server-ip" checked> Server IP Address</label>
+        <label><input type="checkbox" id="exp-query-string" checked> Query String Params</label>
+      </div>
+    </div>
+  </div>
+
+  <div id="noise-modal-overlay" class="hidden">
+    <div id="noise-panel">
+      <div class="modal-header">
+        <h4>Manage Noise Headers</h4>
+        <button id="noise-modal-close" class="modal-close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="noise-add-row">
+          <input type="text" id="noise-add-input" placeholder="Header name (e.g. x-custom-header)">
+          <button id="noise-add-btn">Add</button>
+        </div>
+        <div class="noise-filter-row">
+          <input type="text" id="noise-filter-input" placeholder="Search noise headers...">
+        </div>
+        <div id="noise-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="global-settings-modal" class="hidden">
+    <div id="global-settings-panel">
+      <div class="modal-header">
+        <h4>Global Settings</h4>
+        <button id="global-settings-close" class="modal-close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <label><input type="checkbox" id="gs-use-noise-inspect" checked> Use noise headers for request inspect</label>
+      </div>
+    </div>
+  </div>
+
+  <div id="clear-storage-modal" class="hidden">
+    <div id="clear-storage-panel">
+      <div class="modal-header">
+        <h4>Clear Storage</h4>
+        <button id="clear-storage-close" class="modal-close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="clear-storage-keys"></div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button id="clear-storage-confirm">Clear Selected</button>
+          <button id="clear-storage-cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
